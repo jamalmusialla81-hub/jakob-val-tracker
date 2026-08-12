@@ -131,6 +131,12 @@ def parse(match):
         )
     }
 
+    # Add our personalised performance rating directly to the saved match
+    parsed["performance_score"] = performance_score(parsed)
+    parsed["performance_label"] = performance_label(parsed["performance_score"])
+
+    return parsed
+
 def performance_score(s):
     """
     100 ~= our reference pop-off performance.
@@ -175,8 +181,8 @@ def performance_label(score):
 def summary(s):
     result = "WIN" if s["won"] else "LOSS"
 
-    score = performance_score(s)
-    label = performance_label(score)
+    score = s.get("performance_score", performance_score(s))
+    label = s.get("performance_label", performance_label(score))
 
     return f"""
 ==============================
@@ -209,6 +215,143 @@ Reference:
 AFK-adjusted working estimate: ~38/8
 """.strip()
 
+
+def load_history():
+    if not MATCH_FILE.exists():
+        return []
+
+    matches = []
+
+    for line in MATCH_FILE.read_text().splitlines():
+        try:
+            match = json.loads(line)
+
+            # Older saved matches may not have scores yet.
+            if "performance_score" not in match:
+                match["performance_score"] = performance_score(match)
+
+            if "performance_label" not in match:
+                match["performance_label"] = performance_label(
+                    match["performance_score"]
+                )
+
+            matches.append(match)
+        except Exception:
+            pass
+
+    # Deduplicate by match ID while preserving newest version
+    deduped = {}
+
+    for match in matches:
+        mid = match.get("match_id")
+
+        if mid:
+            deduped[mid] = match
+
+    return list(deduped.values())
+
+
+def rolling_stats(history, amount):
+    recent = history[-amount:]
+
+    if not recent:
+        return None
+
+    count = len(recent)
+
+    avg_score = sum(
+        m.get("performance_score", 0) for m in recent
+    ) / count
+
+    avg_kd = sum(
+        m.get("kd", 0) for m in recent
+    ) / count
+
+    avg_acs = sum(
+        m.get("acs", 0) for m in recent
+    ) / count
+
+    avg_adr = sum(
+        m.get("adr", 0) for m in recent
+    ) / count
+
+    avg_hs = sum(
+        m.get("hs", 0) for m in recent
+    ) / count
+
+    avg_kpr = sum(
+        m.get("kills_per_round", 0) for m in recent
+    ) / count
+
+    avg_dpr = sum(
+        m.get("deaths_per_round", 0) for m in recent
+    ) / count
+
+    wins = sum(
+        1 for m in recent if m.get("won")
+    )
+
+    return {
+        "games": count,
+        "performance": round(avg_score, 1),
+        "kd": round(avg_kd, 2),
+        "acs": round(avg_acs, 1),
+        "adr": round(avg_adr, 1),
+        "hs": round(avg_hs, 1),
+        "kpr": round(avg_kpr, 3),
+        "dpr": round(avg_dpr, 3),
+        "winrate": round((wins / count) * 100, 1),
+    }
+
+
+def rolling_report():
+    history = load_history()
+
+    if not history:
+        return "No match history yet."
+
+    lines = [
+        "",
+        "==============================",
+        "ROLLING PERFORMANCE",
+        "==============================",
+    ]
+
+    for amount in (5, 10, 20):
+        stats = rolling_stats(history, amount)
+
+        if not stats:
+            continue
+
+        lines.append("")
+        lines.append(
+            f"LAST {stats['games']} GAMES "
+            f"(target window: {amount})"
+        )
+
+        lines.append(
+            f"Performance: {stats['performance']}/100"
+        )
+
+        lines.append(
+            f"KD: {stats['kd']} | "
+            f"ACS: {stats['acs']} | "
+            f"ADR: {stats['adr']}"
+        )
+
+        lines.append(
+            f"HS: {stats['hs']}% | "
+            f"K/R: {stats['kpr']} | "
+            f"D/R: {stats['dpr']}"
+        )
+
+        lines.append(
+            f"Win rate: {stats['winrate']}%"
+        )
+
+    return "\n".join(lines)
+
+
 def check():
     seen = load_seen()
 
@@ -236,6 +379,14 @@ def check():
         seen.add(s["match_id"])
 
     save_seen(seen)
+
+    report = rolling_report()
+    print(report)
+
+    (DATA / "rolling_summary.txt").write_text(
+        report,
+        encoding="utf-8"
+    )
 
 def main():
     print(f"Tracking {NAME}#{TAG}")
