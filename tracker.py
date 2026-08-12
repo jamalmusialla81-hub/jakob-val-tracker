@@ -122,21 +122,74 @@ def parse(match):
 
         "rounds": rounds,
 
+        # Length-normalised combat metrics
+        "kills_per_round": round(div(kills, rounds), 3),
+        "deaths_per_round": round(div(deaths, rounds), 3),
+
         "won": bool(
             teams.get(team, {}).get("has_won", False)
         )
     }
 
+def performance_score(s):
+    """
+    100 ~= our reference pop-off performance.
+
+    Heavily weights round-normalised combat impact so a 30-round
+    match isn't automatically considered better than a short match.
+    """
+
+    # Pop-off reference had 23 rounds.
+    ref_kpr = 35 / 23
+    ref_dpr = 11 / 23
+
+    kpr_score = div(s["kills_per_round"], ref_kpr) * 100
+    survival_score = div(ref_dpr, max(s["deaths_per_round"], 0.01)) * 100
+    acs_score = div(s["acs"], POPOFF["acs"]) * 100
+    adr_score = div(s["adr"], POPOFF["adr"]) * 100
+
+    # HS% matters, but shouldn't dominate overall performance.
+    hs_score = div(s["hs"], POPOFF["hs"]) * 100
+
+    score = (
+        kpr_score * 0.30
+        + survival_score * 0.20
+        + acs_score * 0.20
+        + adr_score * 0.20
+        + hs_score * 0.10
+    )
+
+    return round(score, 1)
+
+
+def performance_label(score):
+    if score >= 95:
+        return "POPOFF"
+    if score >= 75:
+        return "GREAT"
+    if score >= 55:
+        return "NORMAL"
+    return "BAD"
+
+
 def summary(s):
     result = "WIN" if s["won"] else "LOSS"
+
+    score = performance_score(s)
+    label = performance_label(score)
 
     return f"""
 ==============================
 {result} | {s['map']} | {s['agent']}
 ==============================
 
+PERFORMANCE: {label} ({score}/100)
+
 K/D/A: {s['kills']}/{s['deaths']}/{s['assists']}
 KD:    {s['kd']}
+
+K/R:   {s['kills_per_round']}
+D/R:   {s['deaths_per_round']}
 
 ACS:   {s['acs']}
 ADR:   {s['adr']}
