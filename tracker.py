@@ -14,7 +14,7 @@ NAME = os.getenv("VAL_NAME", "King")
 TAG = os.getenv("VAL_TAG", "Jakob")
 POLL_SECONDS = int(os.getenv("POLL_SECONDS", "90"))
 
-BASE_URL = "https://api.henrikdev.xyz/valorant/v3/matches"
+BASE_URL = "https://api.henrikdev.xyz/valorant/v4/matches"
 
 DATA = Path("data")
 DATA.mkdir(exist_ok=True)
@@ -50,7 +50,7 @@ def get_matches():
             "No HenrikDev API key. Put HENRIK_API_KEY in your .env file."
         )
 
-    url = f"{BASE_URL}/{REGION}/{NAME}/{TAG}"
+    url = f"{BASE_URL}/{REGION}/pc/{NAME}/{TAG}"
 
     r = requests.get(
         url,
