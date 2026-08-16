@@ -1,6 +1,26 @@
 {
   "matches": [
     {
+      "acs": 360.9,
+      "adr": 255.6,
+      "agent": "Reyna",
+      "assists": 7,
+      "dd_delta_round": 112.8,
+      "deaths": 12,
+      "deaths_per_round": 0.706,
+      "hs": 20.3,
+      "kd": 1.75,
+      "key": "bb73f650958690e6",
+      "kills": 21,
+      "kills_per_round": 1.235,
+      "map": "Lotus",
+      "performance_label": "GREAT",
+      "performance_score": 85.7,
+      "rounds": 17,
+      "started_at": "2026-08-08T04:49:48.577Z",
+      "won": true
+    },
+    {
       "acs": 174.3,
       "adr": 102.1,
       "agent": "Clove",
@@ -139,26 +159,6 @@
       "rounds": 20,
       "started_at": "2026-08-14T09:01:45.267Z",
       "won": false
-    },
-    {
-      "acs": 360.9,
-      "adr": 255.6,
-      "agent": "Reyna",
-      "assists": 7,
-      "dd_delta_round": 112.8,
-      "deaths": 12,
-      "deaths_per_round": 0.706,
-      "hs": 20.3,
-      "kd": 1.75,
-      "key": "bb73f650958690e6",
-      "kills": 21,
-      "kills_per_round": 1.235,
-      "map": "Lotus",
-      "performance_label": "GREAT",
-      "performance_score": 85.7,
-      "rounds": 17,
-      "started_at": "2026-08-08T04:49:48.577Z",
-      "won": true
     },
     {
       "acs": 407.1,
