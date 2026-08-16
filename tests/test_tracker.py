@@ -125,6 +125,33 @@ V4_MATCH = {
 
 
 class TrackerTests(unittest.TestCase):
+    def test_history_merge_is_chronological(self):
+        newer = tracker.normalize_saved_match(
+            {
+                "key": "newer",
+                "started_at": "2026-08-15T00:00:00Z",
+                "kills": 1,
+                "deaths": 1,
+                "assists": 0,
+                "rounds": 1,
+                "acs": 100,
+                "adr": 100,
+                "hs": 10,
+                "won": True,
+            }
+        )
+        older = copy.deepcopy(newer)
+        older["match_key"] = "older"
+        older["started_at"] = "2026-08-01T00:00:00Z"
+
+        with (
+            patch.object(tracker, "MATCH_FILE", Path("/does/not/exist")),
+            patch.object(tracker, "load_public_history", return_value=[newer, older]),
+        ):
+            merged = tracker.merge_history()
+
+        self.assertEqual([match["match_key"] for match in merged], ["older", "newer"])
+
     def test_parses_combat_round_and_side_metrics(self):
         parsed = tracker.parse(V4_MATCH)
 

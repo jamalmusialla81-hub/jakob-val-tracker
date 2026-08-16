@@ -655,7 +655,13 @@ def merge_history(new_matches=()):
             anonymous += 1
             identity = f"anonymous-{anonymous}"
         deduped[identity] = normalized
-    return list(deduped.values())
+    return sorted(
+        deduped.values(),
+        key=lambda match: (
+            match.get("started_at") is not None,
+            match.get("started_at") or "",
+        ),
+    )
 
 
 def values(matches, metric):
