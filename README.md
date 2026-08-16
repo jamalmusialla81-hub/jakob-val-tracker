@@ -26,4 +26,15 @@ Run:
 
     python tracker.py
 
-Stats are stored in the `data` folder.
+Run one check and exit:
+
+    python tracker.py --once
+
+Private local state is stored in the ignored `data` folder. Sanitized public
+output is written to `stats/latest.json`; it contains only allow-listed match
+metrics and rolling 5, 10, and 20 game summaries. Raw match IDs, player IDs,
+account details, and the API key are never included.
+
+The `Update rolling stats` GitHub Actions workflow checks every 15 minutes and
+pushes only when the exported stats change. Add `HENRIK_API_KEY` as a repository
+Actions secret before running the workflow.
