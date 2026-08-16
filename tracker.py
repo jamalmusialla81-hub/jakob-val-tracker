@@ -60,7 +60,15 @@ def get_matches():
     )
 
     r.raise_for_status()
-    return r.json().get("data", [])
+    payload = r.json()
+
+    if isinstance(payload, list):
+        return payload
+
+    if isinstance(payload, dict):
+        return payload.get("data", [])
+
+    return []
 
 def find_player(match):
     players = match.get("players", {}).get("all_players", [])
