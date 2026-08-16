@@ -1,0 +1,57 @@
+{
+  "latest_match": {
+    "acs": 144.2,
+    "adr": 99.1,
+    "agent": "Jett",
+    "assists": 4,
+    "dd_delta_round": -72.6,
+    "deaths": 15,
+    "deaths_per_round": 0.882,
+    "hs": 7.3,
+    "kd": 0.53,
+    "kills": 8,
+    "kills_per_round": 0.471,
+    "map": "Summit",
+    "performance_label": "BAD",
+    "performance_score": 38.6,
+    "rounds": 17,
+    "started_at": "2026-08-15T05:58:54.162Z",
+    "won": true
+  },
+  "rolling": {
+    "10": {
+      "acs": 242.9,
+      "adr": 158.1,
+      "dpr": 0.765,
+      "games": 10,
+      "hs": 15.9,
+      "kd": 1.22,
+      "kpr": 0.844,
+      "performance": 61.9,
+      "winrate": 60.0
+    },
+    "20": {
+      "acs": 242.9,
+      "adr": 158.1,
+      "dpr": 0.765,
+      "games": 10,
+      "hs": 15.9,
+      "kd": 1.22,
+      "kpr": 0.844,
+      "performance": 61.9,
+      "winrate": 60.0
+    },
+    "5": {
+      "acs": 248.4,
+      "adr": 162.7,
+      "dpr": 0.8,
+      "games": 5,
+      "hs": 13.0,
+      "kd": 1.11,
+      "kpr": 0.849,
+      "performance": 60.3,
+      "winrate": 60.0
+    }
+  },
+  "schema_version": 1
+}
