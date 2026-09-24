@@ -154,8 +154,9 @@
       "Phantom": 3,
       "Sheriff": 1,
       "Spectre": 1,
-      "Unknown": 3,
-      "Vandal": 4
+      "Unknown": 1,
+      "Vandal": 4,
+      "Warden": 2
     },
     "won": false,
     "zero_kill_rounds": 10
